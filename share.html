@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-itunes-app" content="app-id=123456789">
+    <meta name="google-play-app" content="app-id=com.milado.rider">
+
+    <title>Track Ride - Milado</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .ride-info {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .cta-section {
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 12px;
+        }
+
+        .cta-subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 24px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .button-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .button-secondary:hover {
+            background: #f8f9fa;
+        }
+
+        .store-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .store-button {
+            flex: 1;
+            padding: 12px;
+            background: #212529;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .store-button:hover {
+            background: #343a40;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🚗</div>
+            <h1>Track My Ride</h1>
+            <p>Someone shared their Milado ride with you</p>
+        </div>
+
+        <div class="content">
+            <div id="loading" class="loading-state">
+                <div class="loader"></div>
+                <p>Loading ride details...</p>
+            </div>
+
+            <div id="error" style="display: none;">
+                <div class="error-message">
+                    <strong>⚠️ Unable to load ride</strong>
+                    <p id="error-message">This link may have expired or is invalid.</p>
+                </div>
+            </div>
+
+            <div id="ride-content" style="display: none;">
+                <div class="ride-info">
+                    <div class="info-row">
+                        <div class="icon">📍</div>
+                        <div class="info-text">
+                            <div class="info-label">Pickup</div>
+                            <div class="info-value" id="pickup-address">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="icon">🎯</div>
+                        <div class="info-text">
+                            <div class="info-label">Destination</div>
+                            <div class="info-value" id="destination-address">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="icon">🚗</div>
+                        <div class="info-text">
+                            <div class="info-label">Driver</div>
+                            <div class="info-value" id="driver-name">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="icon">📊</div>
+                        <div class="info-text">
+                            <div class="info-label">Status</div>
+                            <div class="info-value">
+                                <span id="ride-status" class="status active">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <div class="cta-title">📱 Track in Real-Time</div>
+                    <div class="cta-subtitle">Open the Milado app for live location tracking</div>
+
+                    <a href="#" id="open-app-button" class="button button-primary">
+                        🚀 Open in Milado App
+                    </a>
+
+                    <div id="download-section" style="display: none;">
+                        <div class="cta-subtitle" style="margin-top: 20px;">Don't have the app yet?</div>
+                        <div class="store-buttons">
+                            <a href="https://apps.apple.com/app/milado-rider/id123456789" class="store-button"
+                                target="_blank">
+                                <span>🍎</span>
+                                <span>App Store</span>
+                            </a>
+                            <a href="https://play.google.com/store/apps/details?id=com.milado.rider"
+                                class="store-button" target="_blank">
+                                <span>📱</span>
+                                <span>Play Store</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p class="footer-text">
+                Powered by Milado Ride Sharing<br>
+                <small>Share links expire after 24 hours</small>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Get share token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const shareToken = window.location.pathname.split('/').pop() || urlParams.get('token');
+
+        // Configuration
+        const API_BASE_URL = 'https://api.milado.app'; // Update with your API URL
+        const DEEP_LINK_SCHEME = 'miladorider';
+
+        // Check if mobile app is installed
+        let appInstalled = false;
+
+        async function loadRideData() {
+            if (!shareToken) {
+                showError('Invalid share link');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/public/rides/shared/${shareToken}`);
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('This ride share link has expired or is invalid');
+                    }
+                    throw new Error('Unable to load ride details');
+                }
+
+                const data = await response.json();
+                displayRideData(data);
+
+            } catch (error) {
+                console.error('Error loading ride:', error);
+                showError(error.message);
+            }
+        }
+
+        function displayRideData(data) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('ride-content').style.display = 'block';
+
+            // Populate ride details
+            document.getElementById('pickup-address').textContent = data.pickupAddress || 'Not available';
+            document.getElementById('destination-address').textContent = data.destinationAddress || 'Not available';
+            document.getElementById('driver-name').textContent = data.driverName || 'Not assigned yet';
+
+            // Set status
+            const statusElement = document.getElementById('ride-status');
+            statusElement.textContent = formatStatus(data.status);
+            statusElement.className = `status ${data.status === 'COMPLETED' ? 'completed' : 'active'}`;
+
+            // Setup deep link button
+            const openAppButton = document.getElementById('open-app-button');
+            const deepLink = `${DEEP_LINK_SCHEME}://share/${shareToken}`;
+            openAppButton.href = deepLink;
+
+            // Try to open app
+            openAppButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                tryOpenApp(deepLink);
+            });
+
+            // Auto-try to open app on page load
+            setTimeout(() => {
+                tryOpenApp(deepLink, true);
+            }, 500);
+        }
+
+        function tryOpenApp(deepLink, silent = false) {
+            // Create hidden iframe to try deep link
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = deepLink;
+            document.body.appendChild(iframe);
+
+            // If app doesn't open in 2 seconds, show download section
+            setTimeout(() => {
+                document.getElementById('download-section').style.display = 'block';
+                document.body.removeChild(iframe);
+            }, 2000);
+
+            // Also try using window.location for better support
+            if (!silent) {
+                window.location.href = deepLink;
+            }
+        }
+
+        function formatStatus(status) {
+            const statusMap = {
+                'PENDING': 'Searching for driver',
+                'ACCEPTED': 'Driver on the way',
+                'EN_ROUTE': 'Driver arriving',
+                'ARRIVED': 'Driver arrived',
+                'IN_PROGRESS': 'Ride in progress',
+                'COMPLETED': 'Ride completed',
+                'CANCELLED': 'Ride cancelled'
+            };
+            return statusMap[status] || status;
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // Load ride data on page load
+        loadRideData();
+
+        // Refresh ride data every 10 seconds for real-time updates
+        setInterval(loadRideData, 10000);
+    </script>
+</body>
+
+</html>
