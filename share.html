@@ -349,8 +349,22 @@
 
     <script>
         // Get share token from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const shareToken = window.location.pathname.split('/').pop() || urlParams.get('token');
+        // Support both direct path (/share/token) and GitHub Pages redirect (#/share/token)
+        let shareToken = '';
+
+        // Check if redirected from 404.html (GitHub Pages SPA hack)
+        if (window.location.hash && window.location.hash.startsWith('#/share/')) {
+            shareToken = window.location.hash.split('/').pop();
+        } else {
+            // Direct access or query param
+            const urlParams = new URLSearchParams(window.location.search);
+            shareToken = window.location.pathname.split('/').pop() || urlParams.get('token');
+
+            // Remove .html if present
+            if (shareToken === 'share.html' || shareToken === 'share') {
+                shareToken = urlParams.get('token') || '';
+            }
+        }
 
         // Configuration
         const API_BASE_URL = 'https://api.milado.app'; // Update with your API URL

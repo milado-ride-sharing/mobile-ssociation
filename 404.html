@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script>
+        // GitHub Pages SPA redirect hack
+        // This captures all 404s and redirects to share.html with the path preserved
+        const path = window.location.pathname;
+
+        // Check if this is a share link
+        if (path.startsWith('/share/')) {
+            // Redirect to share.html with the full path preserved
+            window.location.replace('/share.html' + window.location.search + '#' + path);
+        } else {
+            // For other 404s, redirect to home
+            window.location.replace('/');
+        }
+    </script>
+</head>
+
+<body>
+    <p>Redirecting...</p>
+</body>
+
+</html>
