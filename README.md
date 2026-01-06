@@ -40,7 +40,7 @@ Web fallback page for ride sharing links. Shows ride details and prompts users t
 
 ## 🚀 Deployment
 
-These files must be hosted at your ride sharing domain (e.g., `ride.milado.app` or `share.yourdomain.com`).
+These files are hosted on GitHub Pages at: `https://milado-ride-sharing.github.io/mobile-ssociation/`
 
 ### Required URL Structure:
 
