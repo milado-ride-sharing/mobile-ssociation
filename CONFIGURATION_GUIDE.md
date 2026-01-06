@@ -1,313 +1,183 @@
-# 🎯 EXACT CONFIGURATION CHECKLIST
+# 🎯 SIMPLE CONFIGURATION GUIDE
 
-This guide tells you **EXACTLY** where to change what. Follow step by step.
+## 📋 YOU ONLY NEED TO UPDATE 2 FILES
 
----
-
-## PART 1: mobile-ssociation Repository (GitHub Pages)
-
-### ✅ WHAT YOU NEED TO DO:
-
-### File 1: `CNAME`
-**Location:** `/mobile-ssociation/CNAME`
-
-**Current:**
-```
-share.milado.app
-```
-
-**Change to:** Your actual subdomain (if you have a domain)
-- If you have `milado.app` domain → use `share.milado.app`
-- If you have `yourdomain.com` → use `share.yourdomain.com`
-- If you DON'T have a domain → DELETE this file and use `milado-ride-sharing.github.io/mobile-ssociation`
+Everything else is handled automatically by scripts!
 
 ---
 
-### File 2: `.well-known/apple-app-site-association`
-**Location:** `/mobile-ssociation/.well-known/apple-app-site-association`
+## FILE 1: Mobile App `.env` File
 
-**Find this line (line 6):**
+**Location:** `milado-mobile/milado-rider-mobile/.env`
+
+**Step 1:** Copy the example file:
+```bash
+cd milado-mobile/milado-rider-mobile
+cp .env.example .env
+```
+
+**Step 2:** Edit `.env` with your values:
+
+```dotenv
+# ===========================================
+# REQUIRED - Update these values
+# ===========================================
+
+# Your API Gateway URL
+API_BASE_URL=http://localhost:8080
+
+# Your WebSocket URL  
+WEBSOCKET_BASE_URL=ws://localhost:8080
+
+# Deep Link Domain (GitHub Pages - no changes needed for now)
+DEEP_LINK_DOMAIN=milado-ride-sharing.github.io
+DEEP_LINK_BASE_PATH=/mobile-ssociation
+
+# Google Maps API Key
+GOOGLE_MAPS_API_KEY=your_actual_google_maps_key
+
+# ===========================================
+# OPTIONAL - Update after app is published
+# ===========================================
+
+# App Store ID (get after publishing to Apple App Store)
+APP_STORE_ID=123456789
+
+# Play Store URL (get after publishing to Google Play)
+PLAY_STORE_URL=https://play.google.com/store/apps/details?id=com.milado.rider
+```
+
+**That's it for mobile!** The build scripts will automatically:
+- Replace `__DEEP_LINK_DOMAIN__` in Android and iOS configs
+- Replace `__DEEP_LINK_BASE_PATH__` in Android config
+- Replace `__GOOGLE_MAPS_API_KEY__` in iOS config
+
+---
+
+## FILE 2: mobile-ssociation Files
+
+**Location:** `mobile-ssociation/` repository
+
+### 2a. Update `share.html` (line 358)
+
+Find this line:
+```javascript
+const API_BASE_URL = 'http://localhost:8080';
+```
+
+Change to your API URL:
+```javascript
+const API_BASE_URL = 'https://your-api-gateway-url.com';
+```
+
+### 2b. Update `.well-known/apple-app-site-association` (line 6)
+
+Find:
 ```json
 "appID": "TEAM_ID.com.milado.rider",
 ```
 
-**Change `TEAM_ID` to:** Your Apple Developer Team ID
-- Find it at: https://developer.apple.com/account/#/membership/
-- Example: If your Team ID is `ABC123XYZ`, change to:
+Replace `TEAM_ID` with your Apple Developer Team ID:
 ```json
 "appID": "ABC123XYZ.com.milado.rider",
 ```
 
----
+**How to find Team ID:** https://developer.apple.com/account/#/membership/
 
-### File 3: `.well-known/assetlinks.json`
-**Location:** `/mobile-ssociation/.well-known/assetlinks.json`
+### 2c. Update `.well-known/assetlinks.json` (line 8)
 
-**Find this line (line 7):**
+Find:
 ```json
-"sha256_cert_fingerprints": [
-  "YOUR_SHA256_FINGERPRINT_HERE"
-]
+"sha256_cert_fingerprints": ["YOUR_SHA256_FINGERPRINT_HERE"]
 ```
 
-**Change to:** Your Android signing key fingerprint
+Replace with your Android fingerprint:
+```json
+"sha256_cert_fingerprints": ["12:34:56:78:90:AB:CD:EF:..."]
+```
 
-**How to get it:**
+**How to get fingerprint:**
 ```bash
-# Run this command:
-keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
-
-# Look for a line like:
-# SHA256: 12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF
-
-# Copy that value and paste it:
-```
-```json
-"sha256_cert_fingerprints": [
-  "12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF"
-]
+keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android | grep SHA256
 ```
 
 ---
 
-### File 4: `share.html`
-**Location:** `/mobile-ssociation/share.html`
+## 🚀 DEPLOYMENT STEPS
 
-**Find line 368:**
-```javascript
-const API_BASE_URL = 'https://api.milado.app'; // Update with your API URL
-```
-
-**Change to:** Your actual API Gateway URL
-- If running locally: `http://localhost:8080`
-- If deployed: Your actual domain like `https://api.yourdomain.com`
-
-**Find line 7:**
-```html
-<meta name="apple-itunes-app" content="app-id=123456789">
-```
-
-**Change `123456789` to:** Your actual App Store app ID (get this from Apple Developer Portal after publishing)
-
-**Find line 258:**
-```html
-<a href="https://apps.apple.com/app/milado-rider/id123456789"
-```
-
-**Change to:** Your actual App Store link (after you publish the app)
-
-**Find line 263:**
-```html
-<a href="https://play.google.com/store/apps/details?id=com.milado.rider"
-```
-
-**Change `com.milado.rider` to:** Your actual Android package name (if different)
-
----
-
-### File 5: Enable GitHub Pages
-
-1. Go to: https://github.com/milado-ride-sharing/mobile-ssociation/settings/pages
-2. Under **Source**: Select `main` branch and `/ (root)` folder
-3. Click **Save**
-4. If you have a domain:
-   - Enter your domain in "Custom domain" field
-   - Click **Save**
-   - Wait for DNS check
-   - Enable "Enforce HTTPS"
-
----
-
-## PART 2: riders-service Repository (Backend)
-
-### File 6: `application.properties`
-**Location:** `/riders-service/src/main/resources/application.properties`
-
-**Add these lines** (or update if they exist):
-```properties
-# Ride Sharing Configuration
-app.share.base-url=https://share.milado.app
-app.share.deep-link-scheme=miladorider
-app.share.expiry-hours=24
-```
-
-**Change `https://share.milado.app` to:**
-- Your GitHub Pages URL (same as CNAME file)
-- OR `https://milado-ride-sharing.github.io/mobile-ssociation` if no custom domain
-
----
-
-## PART 3: milado-mobile Repository (Mobile App)
-
-### File 7: Deep Link Service
-**Location:** `/milado-mobile/milado-rider-mobile/src/services/deepLinkService.ts`
-
-**Find this section (around line 10):**
-```typescript
-const DEEP_LINK_CONFIG = {
-  scheme: 'miladorider',
-  domain: 'ride.milado.app',  // ← CHANGE THIS
-  paths: {
-    sharedRide: '/share/',
-    rideDetails: '/ride/',
-  },
-};
-```
-
-**Change `ride.milado.app` to:**
-- Your GitHub Pages custom domain: `share.milado.app`
-- OR `milado-ride-sharing.github.io` if no custom domain
-
----
-
-### File 8: Android Manifest
-**Location:** `/milado-mobile/milado-rider-mobile/android/app/src/main/AndroidManifest.xml`
-
-**Find the intent-filter section:**
-```xml
-<intent-filter android:autoVerify="true">
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="https" android:host="ride.milado.app" />
-    <!-- ↑ CHANGE THIS HOST -->
-</intent-filter>
-```
-
-**Change `android:host="ride.milado.app"` to:**
-```xml
-<data android:scheme="https" android:host="share.milado.app" />
-```
-
----
-
-### File 9: iOS Info.plist
-**Location:** `/milado-mobile/milado-rider-mobile/ios/MiladoMobile/Info.plist`
-
-**Find:**
-```xml
-<key>com.apple.developer.associated-domains</key>
-<array>
-    <string>applinks:ride.milado.app</string>
-    <!-- ↑ CHANGE THIS DOMAIN -->
-</array>
-```
-
-**Change to:**
-```xml
-<key>com.apple.developer.associated-domains</key>
-<array>
-    <string>applinks:share.milado.app</string>
-</array>
-```
-
----
-
-### File 10: iOS Entitlements
-**Location:** `/milado-mobile/milado-rider-mobile/ios/MiladoMobile/MiladoMobile.entitlements`
-
-**Find:**
-```xml
-<key>com.apple.developer.associated-domains</key>
-<array>
-    <string>applinks:ride.milado.app</string>
-    <!-- ↑ CHANGE THIS DOMAIN -->
-</array>
-```
-
-**Change to:**
-```xml
-<key>com.apple.developer.associated-domains</key>
-<array>
-    <string>applinks:share.milado.app</string>
-</array>
-```
-
----
-
-## PART 4: DNS Configuration (If Using Custom Domain)
-
-### Your Domain Provider (GoDaddy/Cloudflare/Namecheap)
-
-Add this DNS record:
-
-| Type | Name | Value | TTL |
-|------|------|-------|-----|
-| CNAME | share | milado-ride-sharing.github.io | 3600 |
-
-This creates: `share.milado.app` → points to GitHub Pages
-
----
-
-## 📝 QUICK SUMMARY - WHAT DOMAIN TO USE WHERE
-
-**Pick ONE domain and use it everywhere:**
-
-### Option A: Custom Domain (Recommended)
-Use: `share.milado.app`
-
-| Location | Value |
-|----------|-------|
-| mobile-ssociation/CNAME | `share.milado.app` |
-| riders-service/application.properties | `app.share.base-url=https://share.milado.app` |
-| deepLinkService.ts | `domain: 'share.milado.app'` |
-| AndroidManifest.xml | `android:host="share.milado.app"` |
-| Info.plist | `applinks:share.milado.app` |
-| MiladoMobile.entitlements | `applinks:share.milado.app` |
-
-### Option B: GitHub Pages Default (If No Domain)
-Use: `milado-ride-sharing.github.io/mobile-ssociation`
-
-| Location | Value |
-|----------|-------|
-| mobile-ssociation/CNAME | DELETE this file |
-| riders-service/application.properties | `app.share.base-url=https://milado-ride-sharing.github.io/mobile-ssociation` |
-| deepLinkService.ts | `domain: 'milado-ride-sharing.github.io'` |
-| AndroidManifest.xml | `android:host="milado-ride-sharing.github.io"` |
-| Info.plist | `applinks:milado-ride-sharing.github.io` |
-| MiladoMobile.entitlements | `applinks:milado-ride-sharing.github.io` |
-
----
-
-## 🔍 HOW TO KNOW IF YOU HAVE A DOMAIN
-
-**You have a domain if:**
-- You paid for something like `milado.app` from GoDaddy/Namecheap/Google Domains
-- You can add DNS records
-- You own `something.com` or `something.app`
-
-**You DON'T have a domain if:**
-- You've never bought one
-- You're just using GitHub
-- You're testing locally
-
-**For now (testing):** Use Option B (GitHub Pages default URL)
-
-**For production:** Buy a domain and use Option A
-
----
-
-## ✅ STEP-BY-STEP ORDER
-
-1. **First:** Update `mobile-ssociation` files (Files 1-4)
-2. **Second:** Push to GitHub and enable GitHub Pages (File 5)
-3. **Third:** Update `riders-service` backend (File 6)
-4. **Fourth:** Update `milado-mobile` app (Files 7-10)
-5. **Fifth:** If using custom domain, configure DNS
-6. **Finally:** Test everything
-
----
-
-## 🧪 TESTING
-
-After all changes:
+### Step 1: Deploy mobile-ssociation to GitHub Pages
 
 ```bash
-# Test association files are accessible
-curl https://share.milado.app/.well-known/apple-app-site-association
-curl https://share.milado.app/.well-known/assetlinks.json
-
-# Should return JSON, not 404
+cd mobile-ssociation
+git add .
+git commit -m "Update configuration"
+git push
 ```
 
-Need help with a specific step? Tell me which file number and I'll guide you!
+Then go to: https://github.com/milado-ride-sharing/mobile-ssociation/settings/pages
+- Source: `main` branch, `/ (root)` folder
+- Click **Save**
+
+### Step 2: Build Mobile App
+
+```bash
+cd milado-mobile/milado-rider-mobile
+
+# Create .env file
+cp .env.example .env
+# Edit .env with your values
+
+# Build Android
+npm run android
+
+# Build iOS (Mac only)
+npm run ios
+```
+
+---
+
+## 📊 SUMMARY TABLE
+
+| What | Where | Value to Set |
+|------|-------|--------------|
+| API URL | `.env` → `API_BASE_URL` | `http://localhost:8080` or your production URL |
+| WebSocket URL | `.env` → `WEBSOCKET_BASE_URL` | `ws://localhost:8080` or your production URL |
+| Deep Link Domain | `.env` → `DEEP_LINK_DOMAIN` | `milado-ride-sharing.github.io` |
+| Deep Link Path | `.env` → `DEEP_LINK_BASE_PATH` | `/mobile-ssociation` |
+| Google Maps Key | `.env` → `GOOGLE_MAPS_API_KEY` | Your Google Maps API key |
+| Web API URL | `share.html` → line 358 | Your API Gateway URL |
+| Apple Team ID | `apple-app-site-association` → line 6 | Your Apple Team ID |
+| Android Fingerprint | `assetlinks.json` → line 8 | Your SHA256 fingerprint |
+
+---
+
+## ❓ FAQ
+
+**Q: Do I need to edit AndroidManifest.xml or iOS entitlements?**
+A: NO! The setup scripts automatically replace placeholders when you run `npm run android` or `npm run ios`.
+
+**Q: Where do I put my API URL for production?**
+A: Two places:
+1. `.env` file → `API_BASE_URL` (for mobile app)
+2. `share.html` → `API_BASE_URL` variable (for web page)
+
+**Q: What if I don't have Apple/Android developer accounts yet?**
+A: You can leave `TEAM_ID` and `SHA256_FINGERPRINT` as placeholders for now. Update them when you're ready to publish.
+
+---
+
+## 🔧 HOW THE SCRIPTS WORK
+
+When you run `npm run android`:
+1. Script reads `DEEP_LINK_DOMAIN` from `.env`
+2. Replaces `__DEEP_LINK_DOMAIN__` in `AndroidManifest.xml`
+3. Replaces `__DEEP_LINK_BASE_PATH__` in `AndroidManifest.xml`
+4. Builds the app
+
+When you run `npm run ios`:
+1. Script reads `DEEP_LINK_DOMAIN` from `.env`
+2. Replaces `__DEEP_LINK_DOMAIN__` in `MiladoMobile.entitlements`
+3. Replaces `__GOOGLE_MAPS_API_KEY__` in `Info.plist`
+4. Builds the app
+
+You never need to manually edit Android/iOS config files!

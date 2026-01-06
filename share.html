@@ -348,27 +348,41 @@
     </div>
 
     <script>
+        // =====================================================
+        // CONFIGURATION - UPDATE THESE VALUES
+        // =====================================================
+
+        // Your API Gateway URL (where your backend is running)
+        // Local development: 'http://localhost:8080'
+        // Production: 'https://your-api-domain.com'
+        const API_BASE_URL = 'http://localhost:8080';
+
+        // Deep link scheme (must match mobile app)
+        const DEEP_LINK_SCHEME = 'miladorider';
+
+        // =====================================================
+        // TOKEN EXTRACTION (No changes needed below)
+        // =====================================================
+
         // Get share token from URL
-        // Support both direct path (/share/token) and GitHub Pages redirect (#/share/token)
+        // Support both direct path and GitHub Pages query param
         let shareToken = '';
 
         // Check if redirected from 404.html (GitHub Pages SPA hack)
         if (window.location.hash && window.location.hash.startsWith('#/share/')) {
             shareToken = window.location.hash.split('/').pop();
+        } else if (window.location.hash && window.location.hash.startsWith('#/mobile-ssociation/share/')) {
+            shareToken = window.location.hash.split('/').pop();
         } else {
             // Direct access or query param
             const urlParams = new URLSearchParams(window.location.search);
-            shareToken = window.location.pathname.split('/').pop() || urlParams.get('token');
+            shareToken = urlParams.get('token') || window.location.pathname.split('/').pop();
 
             // Remove .html if present
             if (shareToken === 'share.html' || shareToken === 'share') {
                 shareToken = urlParams.get('token') || '';
             }
         }
-
-        // Configuration
-        const API_BASE_URL = 'https://api.milado.app'; // Update with your API URL
-        const DEEP_LINK_SCHEME = 'miladorider';
 
         // Check if mobile app is installed
         let appInstalled = false;
