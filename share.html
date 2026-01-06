@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="apple-itunes-app" content="app-id=123456789">
-    <meta name="google-play-app" content="app-id=com.milado.rider">
+    <!-- App IDs replaced dynamically by JavaScript below -->
+    <meta name="apple-itunes-app" content="app-id=__APP_STORE_ID__">
+    <meta name="google-play-app" content="app-id=__PLAY_STORE_PACKAGE__">
 
     <title>Track Ride - Milado</title>
 
@@ -323,13 +324,11 @@
                     <div id="download-section" style="display: none;">
                         <div class="cta-subtitle" style="margin-top: 20px;">Don't have the app yet?</div>
                         <div class="store-buttons">
-                            <a href="https://apps.apple.com/app/milado-rider/id123456789" class="store-button"
-                                target="_blank">
+                            <a href="#" id="app-store-link" class="store-button" target="_blank">
                                 <span>🍎</span>
                                 <span>App Store</span>
                             </a>
-                            <a href="https://play.google.com/store/apps/details?id=com.milado.rider"
-                                class="store-button" target="_blank">
+                            <a href="#" id="play-store-link" class="store-button" target="_blank">
                                 <span>📱</span>
                                 <span>Play Store</span>
                             </a>
@@ -349,16 +348,27 @@
 
     <script>
         // =====================================================
-        // CONFIGURATION - UPDATE THESE VALUES
+        // CONFIGURATION - UPDATE ALL THESE VALUES
         // =====================================================
 
         // Your API Gateway URL (where your backend is running)
-        // Local development: 'http://localhost:8080'
-        // Production: 'https://your-api-domain.com'
-        const API_BASE_URL = 'http://localhost:8080';
+        // Local: 'http://localhost:8080' | Production: 'https://api.yourdomain.com'
+        const API_BASE_URL = 'https://api.iziatec.com/';
 
         // Deep link scheme (must match mobile app)
         const DEEP_LINK_SCHEME = 'miladorider';
+
+        // App Store Configuration
+        const APP_STORE_ID = '123456789';  // Your Apple App Store ID
+        const APP_STORE_URL = `https://apps.apple.com/app/milado-rider/id${APP_STORE_ID}`;
+        
+        // Play Store Configuration
+        const PLAY_STORE_PACKAGE = 'com.milado.rider';  // Your Android package name
+        const PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${PLAY_STORE_PACKAGE}`;
+
+        // Update meta tags with configured values
+        document.querySelector('meta[name="apple-itunes-app"]').setAttribute('content', `app-id=${APP_STORE_ID}`);
+        document.querySelector('meta[name="google-play-app"]').setAttribute('content', `app-id=${PLAY_STORE_PACKAGE}`);
 
         // =====================================================
         // TOKEN EXTRACTION (No changes needed below)
@@ -383,6 +393,10 @@
                 shareToken = urlParams.get('token') || '';
             }
         }
+
+        // Set store URLs dynamically
+        document.getElementById('app-store-link').href = APP_STORE_URL;
+        document.getElementById('play-store-link').href = PLAY_STORE_URL;
 
         // Check if mobile app is installed
         let appInstalled = false;

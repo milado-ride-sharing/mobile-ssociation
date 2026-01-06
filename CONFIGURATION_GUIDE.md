@@ -58,17 +58,22 @@ PLAY_STORE_URL=https://play.google.com/store/apps/details?id=com.milado.rider
 
 **Location:** `mobile-ssociation/` repository
 
-### 2a. Update `share.html` (line 358)
+### 2a. Update `share.html` (lines 357-369)
 
-Find this line:
+Find the configuration section at the top of the `<script>` tag:
+
 ```javascript
+// CONFIGURATION - UPDATE ALL THESE VALUES
 const API_BASE_URL = 'http://localhost:8080';
+const DEEP_LINK_SCHEME = 'miladorider';
+const APP_STORE_ID = '123456789';
+const PLAY_STORE_PACKAGE = 'com.milado.rider';
 ```
 
-Change to your API URL:
-```javascript
-const API_BASE_URL = 'https://your-api-gateway-url.com';
-```
+**Update these values:**
+- `API_BASE_URL` → Your API Gateway URL (e.g., `https://api.yourdomain.com`)
+- `APP_STORE_ID` → Your Apple App Store ID (get after publishing)
+- `PLAY_STORE_PACKAGE` → Your Android package name (usually `com.yourcompany.appname`)
 
 ### 2b. Update `.well-known/apple-app-site-association` (line 6)
 
@@ -145,7 +150,11 @@ npm run ios
 | Deep Link Domain | `.env` → `DEEP_LINK_DOMAIN` | `milado-ride-sharing.github.io` |
 | Deep Link Path | `.env` → `DEEP_LINK_BASE_PATH` | `/mobile-ssociation` |
 | Google Maps Key | `.env` → `GOOGLE_MAPS_API_KEY` | Your Google Maps API key |
-| Web API URL | `share.html` → line 358 | Your API Gateway URL |
+| App Store ID | `.env` → `APP_STORE_ID` | Your Apple App Store ID |
+| Play Store URL | `.env` → `PLAY_STORE_URL` | Your Play Store URL |
+| Web API URL | `share.html` → `API_BASE_URL` | Your API Gateway URL |
+| Web App Store ID | `share.html` → `APP_STORE_ID` | Your Apple App Store ID (same as mobile) |
+| Web Play Store Package | `share.html` → `PLAY_STORE_PACKAGE` | Your Android package name |
 | Apple Team ID | `apple-app-site-association` → line 6 | Your Apple Team ID |
 | Android Fingerprint | `assetlinks.json` → line 8 | Your SHA256 fingerprint |
 
@@ -157,9 +166,14 @@ npm run ios
 A: NO! The setup scripts automatically replace placeholders when you run `npm run android` or `npm run ios`.
 
 **Q: Where do I put my API URL for production?**
-A: Two places:
-1. `.env` file → `API_BASE_URL` (for mobile app)
-2. `share.html` → `API_BASE_URL` variable (for web page)
+A: Two places (they should match):
+1. Mobile app: `.env` file → `API_BASE_URL`
+2. Web page: `share.html` → `API_BASE_URL` variable
+
+**Q: Where do I put App Store IDs?**
+A: Two places (they should match):
+1. Mobile app: `.env` file → `APP_STORE_ID` and `PLAY_STORE_URL`
+2. Web page: `share.html` → `APP_STORE_ID` and `PLAY_STORE_PACKAGE` variables
 
 **Q: What if I don't have Apple/Android developer accounts yet?**
 A: You can leave `TEAM_ID` and `SHA256_FINGERPRINT` as placeholders for now. Update them when you're ready to publish.
