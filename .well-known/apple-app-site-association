@@ -3,14 +3,14 @@
     "apps": [],
     "details": [
       {
-        "appID": "TEAM_ID.com.milado.rider",
+        "appID": "B477CMVJCH.com.milado.rider",
         "paths": ["/mobile-ssociation/share.html*", "/mobile-ssociation/share/*", "/mobile-ssociation/*"]
       }
     ]
   },
   "webcredentials": {
     "apps": [
-      "TEAM_ID.com.milado.rider"
+      "B477CMVJCH.com.milado.rider"
     ]
   }
 }
