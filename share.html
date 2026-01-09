@@ -431,9 +431,10 @@
             document.getElementById('ride-content').style.display = 'block';
 
             // Populate ride details
+            // API returns: pickupAddress, dropoffAddress, driverFirstName
             document.getElementById('pickup-address').textContent = data.pickupAddress || 'Not available';
-            document.getElementById('destination-address').textContent = data.destinationAddress || 'Not available';
-            document.getElementById('driver-name').textContent = data.driverName || 'Not assigned yet';
+            document.getElementById('destination-address').textContent = data.dropoffAddress || 'Not available';
+            document.getElementById('driver-name').textContent = data.driverFirstName || 'Not assigned yet';
 
             // Set status
             const statusElement = document.getElementById('ride-status');
