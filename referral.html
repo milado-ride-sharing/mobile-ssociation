@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- App IDs replaced dynamically by JavaScript below -->
+    <meta name="apple-itunes-app" content="app-id=__APP_STORE_ID__">
+    <meta name="google-play-app" content="app-id=__PLAY_STORE_PACKAGE__">
+
+    <title>Join Milado - Referral</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .referral-info {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .bonus-badge {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .bonus-badge .amount {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .bonus-badge .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .cta-section {
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 12px;
+        }
+
+        .cta-subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 24px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .store-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .store-button {
+            flex: 1;
+            padding: 12px;
+            background: #212529;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .store-button:hover {
+            background: #343a40;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .features {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo" id="header-logo">🎁</div>
+            <h1 id="header-title">Join Milado!</h1>
+            <p id="header-subtitle">You've been invited to join Milado</p>
+        </div>
+
+        <div class="content">
+            <div id="error" style="display: none;">
+                <div class="error-message">
+                    <strong>⚠️ Invalid Referral Link</strong>
+                    <p id="error-message">This referral link is invalid or has expired.</p>
+                </div>
+            </div>
+
+            <div id="referral-content">
+                <div class="bonus-badge">
+                    <div class="amount" id="bonus-amount">🎉 Welcome Bonus!</div>
+                    <div class="label" id="bonus-label">Sign up and get rewarded</div>
+                </div>
+
+                <div class="referral-info">
+                    <div class="info-row">
+                        <div class="icon">🎁</div>
+                        <div class="info-text">
+                            <div class="info-label">Referral Code</div>
+                            <div class="info-value" id="referral-code">Loading...</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="icon" id="type-icon">👤</div>
+                        <div class="info-text">
+                            <div class="info-label">Sign Up As</div>
+                            <div class="info-value" id="signup-type">Rider</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <div class="cta-title">📱 Get Started</div>
+                    <div class="cta-subtitle" id="cta-subtitle">Download the Milado app to sign up</div>
+
+                    <button id="open-app-button" class="button button-primary">
+                        🚀 Open Milado App
+                    </button>
+
+                    <div id="download-section" style="display: none;">
+                        <div class="cta-subtitle" style="margin-top: 20px;">Don't have the app yet?</div>
+                        <div class="store-buttons">
+                            <a href="#" id="app-store-link" class="store-button" target="_blank">
+                                <span>🍎</span>
+                                <span>App Store</span>
+                            </a>
+                            <a href="#" id="play-store-link" class="store-button" target="_blank">
+                                <span>📱</span>
+                                <span>Play Store</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="features">
+                        <div class="feature-item">
+                            <span>✅</span>
+                            <span>Quick and easy registration</span>
+                        </div>
+                        <div class="feature-item">
+                            <span>✅</span>
+                            <span>Safe and reliable rides</span>
+                        </div>
+                        <div class="feature-item">
+                            <span>✅</span>
+                            <span>Earn rewards for referring friends</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p class="footer-text">
+                Powered by Milado Ride Sharing<br>
+                <small>Your trusted ride partner</small>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // CONFIGURATION - UPDATE ALL THESE VALUES
+        // =====================================================
+
+        // Deep link schemes (must match mobile apps)
+        const RIDER_DEEP_LINK_SCHEME = 'miladorider';
+        const DRIVER_DEEP_LINK_SCHEME = 'miladodriver';
+
+        // App Store Configuration (iOS)
+        const RIDER_APP_STORE_ID = '123456789';  // Your Apple App Store ID for Rider app
+        const DRIVER_APP_STORE_ID = '123456790'; // Your Apple App Store ID for Driver app
+        const RIDER_APP_STORE_URL = `https://apps.apple.com/app/milado-rider/id${RIDER_APP_STORE_ID}`;
+        const DRIVER_APP_STORE_URL = `https://apps.apple.com/app/milado-driver/id${DRIVER_APP_STORE_ID}`;
+
+        // Play Store Configuration (Android)
+        const RIDER_PLAY_STORE_PACKAGE = 'com.milado.rider';
+        const DRIVER_PLAY_STORE_PACKAGE = 'com.milado.driver';
+        const RIDER_PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${RIDER_PLAY_STORE_PACKAGE}`;
+        const DRIVER_PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${DRIVER_PLAY_STORE_PACKAGE}`;
+
+        // =====================================================
+        // DEVICE DETECTION
+        // =====================================================
+
+        function getDeviceInfo() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isAndroid = /android/i.test(ua);
+            const isMobile = isIOS || isAndroid;
+
+            return { isIOS, isAndroid, isMobile };
+        }
+
+        const device = getDeviceInfo();
+
+        // =====================================================
+        // URL PARSING - Extract referral code and type
+        // =====================================================
+
+        let referralCode = '';
+        let referralType = 'rider'; // 'driver' or 'rider'
+
+        // URL patterns supported:
+        // 1. /referral.html?code=ABC123&type=driver
+        // 2. /ref/driver/ABC123 (via 404 redirect to #/ref/driver/ABC123)
+        // 3. /ref/rider/ABC123 (via 404 redirect to #/ref/rider/ABC123)
+
+        const urlPath = window.location.pathname + window.location.hash;
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashPath = window.location.hash.substring(1); // Remove leading #
+
+        // Check for hash-based routing first (from 404 redirect)
+        if (hashPath.includes('/ref/driver/')) {
+            referralType = 'driver';
+            referralCode = hashPath.split('/ref/driver/').pop()?.split('/')[0]?.split('?')[0] || '';
+        } else if (hashPath.includes('/ref/rider/')) {
+            referralType = 'rider';
+            referralCode = hashPath.split('/ref/rider/').pop()?.split('/')[0]?.split('?')[0] || '';
+        }
+        // Check query parameters
+        else if (urlParams.get('code')) {
+            referralCode = urlParams.get('code');
+            referralType = urlParams.get('type') || 'rider';
+        }
+        // Check URL path for patterns (direct GitHub Pages routing)
+        else if (urlPath.includes('/ref/driver/')) {
+            referralType = 'driver';
+            referralCode = urlPath.split('/ref/driver/').pop()?.split('/')[0]?.split('?')[0] || '';
+        } else if (urlPath.includes('/ref/rider/')) {
+            referralType = 'rider';
+            referralCode = urlPath.split('/ref/rider/').pop()?.split('/')[0]?.split('?')[0] || '';
+        }
+
+        // Validate referral code
+        if (!referralCode || referralCode === 'referral.html') {
+            document.getElementById('referral-content').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+        } else {
+            // Update UI based on referral type
+            setupReferralUI();
+        }
+
+        // =====================================================
+        // UI SETUP
+        // =====================================================
+
+        function setupReferralUI() {
+            const isDriver = referralType === 'driver';
+
+            // Update header
+            document.getElementById('header-logo').textContent = isDriver ? '🚗' : '🎁';
+            document.getElementById('header-title').textContent = isDriver
+                ? 'Become a Milado Driver!'
+                : 'Join Milado!';
+            document.getElementById('header-subtitle').textContent = isDriver
+                ? "You've been invited to become a Milado driver"
+                : "You've been invited to ride with Milado";
+
+            // Update bonus section for drivers
+            if (isDriver) {
+                document.getElementById('bonus-label').textContent = 'Start earning with flexible hours';
+            }
+
+            // Update referral info
+            document.getElementById('referral-code').textContent = referralCode;
+            document.getElementById('type-icon').textContent = isDriver ? '🚗' : '👤';
+            document.getElementById('signup-type').textContent = isDriver ? 'Driver' : 'Rider';
+
+            // Update CTA
+            document.getElementById('cta-subtitle').textContent = isDriver
+                ? 'Download the Milado Driver app to sign up'
+                : 'Download the Milado app to sign up';
+            document.getElementById('open-app-button').textContent = isDriver
+                ? '🚀 Open Milado Driver App'
+                : '🚀 Open Milado App';
+
+            // Update features for drivers
+            if (isDriver) {
+                document.querySelector('.features').innerHTML = `
+                    <div class="feature-item">
+                        <span>✅</span>
+                        <span>Flexible working hours</span>
+                    </div>
+                    <div class="feature-item">
+                        <span>✅</span>
+                        <span>Weekly payouts</span>
+                    </div>
+                    <div class="feature-item">
+                        <span>✅</span>
+                        <span>Bonus for completing trips</span>
+                    </div>
+                `;
+            }
+
+            // Update meta tags
+            const appStoreId = isDriver ? DRIVER_APP_STORE_ID : RIDER_APP_STORE_ID;
+            const playStorePackage = isDriver ? DRIVER_PLAY_STORE_PACKAGE : RIDER_PLAY_STORE_PACKAGE;
+            document.querySelector('meta[name="apple-itunes-app"]').setAttribute('content', `app-id=${appStoreId}`);
+            document.querySelector('meta[name="google-play-app"]').setAttribute('content', `app-id=${playStorePackage}`);
+
+            // Setup store buttons
+            setupStoreButtons();
+        }
+
+        function setupStoreButtons() {
+            const isDriver = referralType === 'driver';
+            const appStoreLink = document.getElementById('app-store-link');
+            const playStoreLink = document.getElementById('play-store-link');
+
+            appStoreLink.href = isDriver ? DRIVER_APP_STORE_URL : RIDER_APP_STORE_URL;
+            playStoreLink.href = isDriver ? DRIVER_PLAY_STORE_URL : RIDER_PLAY_STORE_URL;
+
+            // On mobile, show only the relevant store button
+            if (device.isIOS) {
+                playStoreLink.style.display = 'none';
+                appStoreLink.style.flex = '1';
+            } else if (device.isAndroid) {
+                appStoreLink.style.display = 'none';
+                playStoreLink.style.flex = '1';
+            }
+        }
+
+        // =====================================================
+        // DEEP LINK HANDLING
+        // =====================================================
+
+        function getDeepLink() {
+            const scheme = referralType === 'driver' ? DRIVER_DEEP_LINK_SCHEME : RIDER_DEEP_LINK_SCHEME;
+            return `${scheme}://referral/${referralCode}`;
+        }
+
+        function getStoreUrl() {
+            if (referralType === 'driver') {
+                return device.isIOS ? DRIVER_APP_STORE_URL : DRIVER_PLAY_STORE_URL;
+            }
+            return device.isIOS ? RIDER_APP_STORE_URL : RIDER_PLAY_STORE_URL;
+        }
+
+        function getIntentUrl() {
+            const packageName = referralType === 'driver'
+                ? DRIVER_PLAY_STORE_PACKAGE
+                : RIDER_PLAY_STORE_PACKAGE;
+            const deepLink = getDeepLink();
+            const fallbackUrl = getStoreUrl();
+
+            return `intent://${deepLink.replace(/^[a-z]+:\/\//, '')}#Intent;scheme=${deepLink.split('://')[0]};package=${packageName};S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end`;
+        }
+
+        function tryOpenApp(silent = false) {
+            const deepLink = getDeepLink();
+            const storeUrl = getStoreUrl();
+
+            if (device.isAndroid) {
+                // Android: Use Intent URL for better handling
+                const intentUrl = getIntentUrl();
+
+                if (!silent) {
+                    window.location.href = intentUrl;
+                }
+
+                // Show download section after delay
+                setTimeout(() => {
+                    document.getElementById('download-section').style.display = 'block';
+                }, 1500);
+
+            } else if (device.isIOS) {
+                // iOS: Try Universal Link / Deep Link first
+                window.location.href = deepLink;
+
+                // Check if we're still on this page after a delay
+                setTimeout(() => {
+                    if (document.visibilityState !== 'hidden') {
+                        document.getElementById('download-section').style.display = 'block';
+
+                        // Auto-redirect to App Store if user clicked the button
+                        if (!silent) {
+                            window.location.href = storeUrl;
+                        }
+                    }
+                }, 2000);
+
+            } else {
+                // Desktop: Just show download section
+                document.getElementById('download-section').style.display = 'block';
+            }
+        }
+
+        // =====================================================
+        // EVENT HANDLERS
+        // =====================================================
+
+        document.getElementById('open-app-button').addEventListener('click', function (e) {
+            e.preventDefault();
+            tryOpenApp(false);
+        });
+
+        // On mobile, try to open app automatically
+        if (device.isMobile && referralCode) {
+            setTimeout(() => {
+                tryOpenApp(true);
+            }, 500);
+        } else if (!device.isMobile) {
+            // Desktop: show download section immediately
+            document.getElementById('download-section').style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

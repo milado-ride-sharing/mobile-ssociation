@@ -6,16 +6,33 @@
     <title>Redirecting...</title>
     <script>
         // GitHub Pages SPA redirect hack
-        // This captures all 404s and redirects to share.html with the path preserved
+        // This captures all 404s and redirects to the appropriate page with the path preserved
         const path = window.location.pathname;
+        const basePath = '/mobile-ssociation'; // Update this if using a custom domain (empty string)
 
-        // Check if this is a share link
-        if (path.startsWith('/share/')) {
-            // Redirect to share.html with the full path preserved
-            window.location.replace('/share.html' + window.location.search + '#' + path);
-        } else {
-            // For other 404s, redirect to home
-            window.location.replace('/');
+        // Helper function to get the actual path without base path
+        function getCleanPath(fullPath) {
+            if (fullPath.startsWith(basePath)) {
+                return fullPath.substring(basePath.length);
+            }
+            return fullPath;
+        }
+
+        const cleanPath = getCleanPath(path);
+
+        // Check if this is a referral link: /ref/driver/CODE or /ref/rider/CODE
+        if (cleanPath.startsWith('/ref/driver/') || cleanPath.startsWith('/ref/rider/')) {
+            // Redirect to referral.html with the path preserved in hash
+            window.location.replace(basePath + '/referral.html' + window.location.search + '#' + cleanPath);
+        }
+        // Check if this is a ride share link: /share/TOKEN
+        else if (cleanPath.startsWith('/share/')) {
+            // Redirect to share.html with the path preserved in hash
+            window.location.replace(basePath + '/share.html' + window.location.search + '#' + cleanPath);
+        }
+        // For other 404s, redirect to home
+        else {
+            window.location.replace(basePath + '/');
         }
     </script>
 </head>

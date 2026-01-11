@@ -395,28 +395,43 @@
         let referralType = ''; // 'driver' or 'rider' (for referral links)
 
         // Check URL patterns
-        const urlPath = window.location.pathname + window.location.hash;
+        const urlPath = window.location.pathname;
         const urlParams = new URLSearchParams(window.location.search);
+        const hashPath = window.location.hash.substring(1); // Remove leading #
 
-        // Referral link patterns: /ref/driver/CODE or /ref/rider/CODE or ?ref=CODE&type=driver
-        if (urlPath.includes('/ref/driver/') || urlParams.get('refType') === 'driver') {
+        // Check hash-based routing first (from 404 redirect)
+        if (hashPath.startsWith('/share/')) {
+            // Ride share link from 404 redirect: #/share/TOKEN
+            shareToken = hashPath.split('/share/').pop()?.split('/')[0]?.split('?')[0] || '';
+        } else if (hashPath.includes('/mobile-ssociation/share/')) {
+            // Legacy path with base path in hash
+            shareToken = hashPath.split('/share/').pop()?.split('/')[0]?.split('?')[0] || '';
+        }
+        // Referral link patterns - redirect to referral.html
+        else if (hashPath.includes('/ref/') || urlPath.includes('/ref/') || urlParams.get('refType')) {
             linkType = 'referral';
-            referralType = 'driver';
-            shareToken = urlPath.split('/ref/driver/').pop()?.split('/')[0] || urlParams.get('ref') || '';
-        } else if (urlPath.includes('/ref/rider/') || urlParams.get('refType') === 'rider') {
-            linkType = 'referral';
-            referralType = 'rider';
-            shareToken = urlPath.split('/ref/rider/').pop()?.split('/')[0] || urlParams.get('ref') || '';
-        } else if (window.location.hash && window.location.hash.startsWith('#/share/')) {
-            // Ride share link from 404 redirect
-            shareToken = window.location.hash.split('/').pop();
-        } else if (window.location.hash && window.location.hash.startsWith('#/mobile-ssociation/share/')) {
-            shareToken = window.location.hash.split('/').pop();
-        } else {
-            // Direct access or query param for ride share
-            shareToken = urlParams.get('token') || window.location.pathname.split('/').pop();
-            if (shareToken === 'share.html' || shareToken === 'share') {
-                shareToken = urlParams.get('token') || '';
+            if (hashPath.includes('/ref/driver/') || urlPath.includes('/ref/driver/') || urlParams.get('refType') === 'driver') {
+                referralType = 'driver';
+                shareToken = hashPath.split('/ref/driver/').pop()?.split('/')[0] ||
+                    urlPath.split('/ref/driver/').pop()?.split('/')[0] ||
+                    urlParams.get('ref') || '';
+            } else {
+                referralType = 'rider';
+                shareToken = hashPath.split('/ref/rider/').pop()?.split('/')[0] ||
+                    urlPath.split('/ref/rider/').pop()?.split('/')[0] ||
+                    urlParams.get('ref') || '';
+            }
+        }
+        // Direct access with query param
+        else if (urlParams.get('token')) {
+            shareToken = urlParams.get('token');
+        }
+        // Try to extract from path (fallback)
+        else {
+            const pathParts = urlPath.split('/').filter(Boolean);
+            const lastPart = pathParts[pathParts.length - 1];
+            if (lastPart && lastPart !== 'share.html' && lastPart !== 'share') {
+                shareToken = lastPart;
             }
         }
 
