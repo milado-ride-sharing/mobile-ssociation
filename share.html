@@ -352,56 +352,195 @@
         // =====================================================
 
         // Your API Gateway URL (where your backend is running)
-        // Local: 'http://localhost:8080' | Production: 'https://api.yourdomain.com'
         const API_BASE_URL = 'https://api.iziatec.com';
 
-        // Deep link scheme (must match mobile app)
-        const DEEP_LINK_SCHEME = 'miladorider';
+        // Deep link schemes (must match mobile apps)
+        const RIDER_DEEP_LINK_SCHEME = 'miladorider';
+        const DRIVER_DEEP_LINK_SCHEME = 'miladodriver';
 
-        // App Store Configuration
-        const APP_STORE_ID = '123456789';  // Your Apple App Store ID
-        const APP_STORE_URL = `https://apps.apple.com/app/milado-rider/id${APP_STORE_ID}`;
+        // App Store Configuration (iOS)
+        const RIDER_APP_STORE_ID = '123456789';  // Your Apple App Store ID for Rider app
+        const DRIVER_APP_STORE_ID = '123456790'; // Your Apple App Store ID for Driver app
+        const RIDER_APP_STORE_URL = `https://apps.apple.com/app/milado-rider/id${RIDER_APP_STORE_ID}`;
+        const DRIVER_APP_STORE_URL = `https://apps.apple.com/app/milado-driver/id${DRIVER_APP_STORE_ID}`;
 
-        // Play Store Configuration
-        const PLAY_STORE_PACKAGE = 'com.milado.rider';  // Your Android package name
-        const PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${PLAY_STORE_PACKAGE}`;
-
-        // Update meta tags with configured values
-        document.querySelector('meta[name="apple-itunes-app"]').setAttribute('content', `app-id=${APP_STORE_ID}`);
-        document.querySelector('meta[name="google-play-app"]').setAttribute('content', `app-id=${PLAY_STORE_PACKAGE}`);
+        // Play Store Configuration (Android)
+        const RIDER_PLAY_STORE_PACKAGE = 'com.milado.rider';
+        const DRIVER_PLAY_STORE_PACKAGE = 'com.milado.driver';
+        const RIDER_PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${RIDER_PLAY_STORE_PACKAGE}`;
+        const DRIVER_PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${DRIVER_PLAY_STORE_PACKAGE}`;
 
         // =====================================================
-        // TOKEN EXTRACTION (No changes needed below)
+        // DEVICE DETECTION
         // =====================================================
 
-        // Get share token from URL
-        // Support both direct path and GitHub Pages query param
+        function getDeviceInfo() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isAndroid = /android/i.test(ua);
+            const isMobile = isIOS || isAndroid;
+
+            return { isIOS, isAndroid, isMobile };
+        }
+
+        const device = getDeviceInfo();
+
+        // =====================================================
+        // TOKEN AND LINK TYPE EXTRACTION
+        // =====================================================
+
         let shareToken = '';
+        let linkType = 'ride'; // 'ride' or 'referral'
+        let referralType = ''; // 'driver' or 'rider' (for referral links)
 
-        // Check if redirected from 404.html (GitHub Pages SPA hack)
-        if (window.location.hash && window.location.hash.startsWith('#/share/')) {
+        // Check URL patterns
+        const urlPath = window.location.pathname + window.location.hash;
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Referral link patterns: /ref/driver/CODE or /ref/rider/CODE or ?ref=CODE&type=driver
+        if (urlPath.includes('/ref/driver/') || urlParams.get('refType') === 'driver') {
+            linkType = 'referral';
+            referralType = 'driver';
+            shareToken = urlPath.split('/ref/driver/').pop()?.split('/')[0] || urlParams.get('ref') || '';
+        } else if (urlPath.includes('/ref/rider/') || urlParams.get('refType') === 'rider') {
+            linkType = 'referral';
+            referralType = 'rider';
+            shareToken = urlPath.split('/ref/rider/').pop()?.split('/')[0] || urlParams.get('ref') || '';
+        } else if (window.location.hash && window.location.hash.startsWith('#/share/')) {
+            // Ride share link from 404 redirect
             shareToken = window.location.hash.split('/').pop();
         } else if (window.location.hash && window.location.hash.startsWith('#/mobile-ssociation/share/')) {
             shareToken = window.location.hash.split('/').pop();
         } else {
-            // Direct access or query param
-            const urlParams = new URLSearchParams(window.location.search);
+            // Direct access or query param for ride share
             shareToken = urlParams.get('token') || window.location.pathname.split('/').pop();
-
-            // Remove .html if present
             if (shareToken === 'share.html' || shareToken === 'share') {
                 shareToken = urlParams.get('token') || '';
             }
         }
 
-        // Set store URLs dynamically
-        document.getElementById('app-store-link').href = APP_STORE_URL;
-        document.getElementById('play-store-link').href = PLAY_STORE_URL;
+        // Update meta tags based on link type
+        if (linkType === 'referral' && referralType === 'driver') {
+            document.querySelector('meta[name="apple-itunes-app"]').setAttribute('content', `app-id=${DRIVER_APP_STORE_ID}`);
+            document.querySelector('meta[name="google-play-app"]').setAttribute('content', `app-id=${DRIVER_PLAY_STORE_PACKAGE}`);
+        } else {
+            document.querySelector('meta[name="apple-itunes-app"]').setAttribute('content', `app-id=${RIDER_APP_STORE_ID}`);
+            document.querySelector('meta[name="google-play-app"]').setAttribute('content', `app-id=${RIDER_PLAY_STORE_PACKAGE}`);
+        }
 
-        // Check if mobile app is installed
-        let appInstalled = false;
+        // =====================================================
+        // SMART APP OPENING & STORE REDIRECT
+        // =====================================================
+
+        function getDeepLink() {
+            if (linkType === 'referral') {
+                const scheme = referralType === 'driver' ? DRIVER_DEEP_LINK_SCHEME : RIDER_DEEP_LINK_SCHEME;
+                return `${scheme}://referral/${shareToken}`;
+            }
+            return `${RIDER_DEEP_LINK_SCHEME}://share/${shareToken}`;
+        }
+
+        function getStoreUrl() {
+            if (linkType === 'referral' && referralType === 'driver') {
+                return device.isIOS ? DRIVER_APP_STORE_URL : DRIVER_PLAY_STORE_URL;
+            }
+            return device.isIOS ? RIDER_APP_STORE_URL : RIDER_PLAY_STORE_URL;
+        }
+
+        function getIntentUrl() {
+            // Android Intent URL for better app detection
+            const packageName = (linkType === 'referral' && referralType === 'driver')
+                ? DRIVER_PLAY_STORE_PACKAGE
+                : RIDER_PLAY_STORE_PACKAGE;
+            const deepLink = getDeepLink();
+            const fallbackUrl = getStoreUrl();
+
+            return `intent://${deepLink.replace(/^[a-z]+:\/\//, '')}#Intent;scheme=${deepLink.split('://')[0]};package=${packageName};S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end`;
+        }
+
+        function tryOpenApp(deepLink, silent = false) {
+            const storeUrl = getStoreUrl();
+
+            if (device.isAndroid) {
+                // Android: Use Intent URL for better handling
+                const intentUrl = getIntentUrl();
+
+                if (!silent) {
+                    window.location.href = intentUrl;
+                }
+
+                // Fallback after delay
+                setTimeout(() => {
+                    document.getElementById('download-section').style.display = 'block';
+                }, 1500);
+
+            } else if (device.isIOS) {
+                // iOS: Try Universal Link / Deep Link first
+                const startTime = Date.now();
+
+                // Try to open app
+                window.location.href = deepLink;
+
+                // Check if we're still on this page after a delay
+                setTimeout(() => {
+                    // If still here after 2 seconds, app isn't installed
+                    if (document.visibilityState !== 'hidden') {
+                        document.getElementById('download-section').style.display = 'block';
+
+                        // Auto-redirect to App Store if user clicked the button
+                        if (!silent) {
+                            window.location.href = storeUrl;
+                        }
+                    }
+                }, 2000);
+
+            } else {
+                // Desktop: Just show download section
+                document.getElementById('download-section').style.display = 'block';
+            }
+        }
+
+        function redirectToStore() {
+            window.location.href = getStoreUrl();
+        }
+
+        // Update store button URLs and visibility based on device
+        function setupStoreButtons() {
+            const appStoreLink = document.getElementById('app-store-link');
+            const playStoreLink = document.getElementById('play-store-link');
+
+            if (linkType === 'referral' && referralType === 'driver') {
+                appStoreLink.href = DRIVER_APP_STORE_URL;
+                playStoreLink.href = DRIVER_PLAY_STORE_URL;
+            } else {
+                appStoreLink.href = RIDER_APP_STORE_URL;
+                playStoreLink.href = RIDER_PLAY_STORE_URL;
+            }
+
+            // On mobile, show only the relevant store button
+            if (device.isIOS) {
+                playStoreLink.style.display = 'none';
+                appStoreLink.style.flex = '1';
+            } else if (device.isAndroid) {
+                appStoreLink.style.display = 'none';
+                playStoreLink.style.flex = '1';
+            }
+        }
+
+        setupStoreButtons();
+
+        // =====================================================
+        // RIDE DATA LOADING
+        // =====================================================
 
         async function loadRideData() {
+            // Skip for referral links
+            if (linkType === 'referral') {
+                handleReferralLink();
+                return;
+            }
+
             if (!shareToken) {
                 showError('Invalid share link');
                 return;
@@ -426,12 +565,62 @@
             }
         }
 
+        function handleReferralLink() {
+            // Update UI for referral link
+            document.querySelector('.header h1').textContent = 'Join Milado!';
+            document.querySelector('.header p').textContent =
+                referralType === 'driver'
+                    ? 'You\'ve been invited to become a Milado driver'
+                    : 'You\'ve been invited to ride with Milado';
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('ride-content').style.display = 'block';
+
+            // Hide ride info, show referral info
+            document.querySelector('.ride-info').innerHTML = `
+                <div class="info-row">
+                    <div class="icon">🎁</div>
+                    <div class="info-text">
+                        <div class="info-label">Referral Code</div>
+                        <div class="info-value">${shareToken}</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="icon">${referralType === 'driver' ? '🚗' : '👤'}</div>
+                    <div class="info-text">
+                        <div class="info-label">Sign Up As</div>
+                        <div class="info-value">${referralType === 'driver' ? 'Driver' : 'Rider'}</div>
+                    </div>
+                </div>
+            `;
+
+            document.querySelector('.cta-title').textContent = '📱 Get Started';
+            document.querySelector('.cta-subtitle').textContent =
+                `Download the Milado ${referralType === 'driver' ? 'Driver' : 'Rider'} app to sign up`;
+
+            // Setup button
+            const openAppButton = document.getElementById('open-app-button');
+            openAppButton.textContent = `🚀 Open Milado ${referralType === 'driver' ? 'Driver' : ''} App`;
+            openAppButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                tryOpenApp(getDeepLink());
+            });
+
+            // On mobile, try to open app or redirect to store immediately
+            if (device.isMobile) {
+                setTimeout(() => {
+                    tryOpenApp(getDeepLink(), false);
+                }, 500);
+            } else {
+                document.getElementById('download-section').style.display = 'block';
+            }
+        }
+
         function displayRideData(data) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('ride-content').style.display = 'block';
 
             // Populate ride details
-            // API returns: pickupAddress, dropoffAddress, driverFirstName
             document.getElementById('pickup-address').textContent = data.pickupAddress || 'Not available';
             document.getElementById('destination-address').textContent = data.dropoffAddress || 'Not available';
             document.getElementById('driver-name').textContent = data.driverFirstName || 'Not assigned yet';
@@ -443,37 +632,21 @@
 
             // Setup deep link button
             const openAppButton = document.getElementById('open-app-button');
-            const deepLink = `${DEEP_LINK_SCHEME}://share/${shareToken}`;
-            openAppButton.href = deepLink;
+            const deepLink = getDeepLink();
 
-            // Try to open app
             openAppButton.addEventListener('click', function (e) {
                 e.preventDefault();
                 tryOpenApp(deepLink);
             });
 
-            // Auto-try to open app on page load
-            setTimeout(() => {
-                tryOpenApp(deepLink, true);
-            }, 500);
-        }
-
-        function tryOpenApp(deepLink, silent = false) {
-            // Create hidden iframe to try deep link
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = deepLink;
-            document.body.appendChild(iframe);
-
-            // If app doesn't open in 2 seconds, show download section
-            setTimeout(() => {
+            // On mobile, auto-try to open app
+            if (device.isMobile) {
+                setTimeout(() => {
+                    tryOpenApp(deepLink, true);
+                }, 500);
+            } else {
+                // Desktop: just show download section
                 document.getElementById('download-section').style.display = 'block';
-                document.body.removeChild(iframe);
-            }, 2000);
-
-            // Also try using window.location for better support
-            if (!silent) {
-                window.location.href = deepLink;
             }
         }
 
@@ -496,11 +669,13 @@
             document.getElementById('error-message').textContent = message;
         }
 
-        // Load ride data on page load
+        // Load data on page load
         loadRideData();
 
-        // Refresh ride data every 10 seconds for real-time updates
-        setInterval(loadRideData, 10000);
+        // Refresh ride data every 10 seconds (only for ride share links)
+        if (linkType === 'ride') {
+            setInterval(loadRideData, 10000);
+        }
     </script>
 </body>
 
