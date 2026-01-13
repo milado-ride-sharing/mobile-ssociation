@@ -5,12 +5,17 @@
       {
         "appID": "B477CMVJCH.com.milado.rider",
         "paths": ["/mobile-ssociation/share.html*", "/mobile-ssociation/share/*", "/mobile-ssociation/*"]
+      },
+      {
+        "appID": "B477CMVJCH.com.milado.driver",
+        "paths": ["/mobile-ssociation/referral.html*", "/mobile-ssociation/ref/driver/*", "/mobile-ssociation/*"]
       }
     ]
   },
   "webcredentials": {
     "apps": [
-      "B477CMVJCH.com.milado.rider"
+      "B477CMVJCH.com.milado.rider",
+      "B477CMVJCH.com.milado.driver"
     ]
   }
 }

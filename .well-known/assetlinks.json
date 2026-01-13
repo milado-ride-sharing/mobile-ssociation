@@ -8,5 +8,15 @@
         "YOUR_SHA256_FINGERPRINT_HERE"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.milado.driver",
+      "sha256_cert_fingerprints": [
+        "YOUR_DRIVER_SHA256_FINGERPRINT_HERE"
+      ]
+    }
   }
 ]
