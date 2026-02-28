@@ -453,7 +453,7 @@
                 const scheme = referralType === 'driver' ? DRIVER_DEEP_LINK_SCHEME : RIDER_DEEP_LINK_SCHEME;
                 return `${scheme}://referral/${shareToken}`;
             }
-            return `${RIDER_DEEP_LINK_SCHEME}://share/${shareToken}`;
+            return `${RIDER_DEEP_LINK_SCHEME}://ride/${shareToken}`;
         }
 
         function getStoreUrl() {
